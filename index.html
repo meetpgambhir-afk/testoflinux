@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>v86 Emulator (GitHub Pages)</title>
+<style>
+body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+#screen { width: 800px; height: 600px; border: 1px solid #333; background: black; }
+</style>
+</head>
+<body>
+
+<h1>v86 Emulator (GitHub Pages)</h1>
+<p>This version loads all emulator files directly from the root of the repository.</p>
+
+<button id="startBtn">Start Emulator</button>
+
+<div id="screen"></div>
+
+<!-- Load v86 engine -->
+<script src="libv86.js"></script>
+
+<script>
+document.getElementById("startBtn").addEventListener("click", () => {
+    const emulator = new V86Starter({
+        wasm_path: "v86.wasm",
+        bios: { url: "seabios.bin" },
+        vga_bios: { url: "vgabios.bin" },
+        cdrom: { url: "tinycore.iso" },   // ISO filename you specified
+        memory_size: 64 * 1024 * 1024,
+        screen_container: document.getElementById("screen"),
+        autostart: true
+    });
+});
+</script>
+
+</body>
+</html>
