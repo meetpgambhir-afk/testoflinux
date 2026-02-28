@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tiny Core Linux Emulator</title>
+    <style>
+        body { margin: 0; background: black; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #screen { width: 800px; height: 600px; }
+    </style>
+</head>
+<body>
+    <div id="screen"></div>
+
+    <!-- Load libv86.js from GitHub Pages -->
+    <script src="https://meetpgambhir-afk.github.io/testoflinux/libv86.js"></script>
+
+    <script>
+        async function loadBinary(url) {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error("Failed to fetch " + url);
+            const buffer = await res.arrayBuffer();
+            return new Uint8Array(buffer);
+        }
+
+        async function startEmulator() {
+            try {
+                // Fetch binaries from GitHub Pages
+                const [wasm, bios, vgabios, iso] = await Promise.all([
+                    loadBinary("https://meetpgambhir-afk.github.io/testoflinux/v86.wasm"),
+                    loadBinary("https://meetpgambhir-afk.github.io/testoflinux/seabios.bin"),
+                    loadBinary("https://meetpgambhir-afk.github.io/testoflinux/vgabios.bin"),
+                    loadBinary("https://meetpgambhir-afk.github.io/testoflinux/tinycore.iso")
+                ]);
+
+                // Start emulator
+                new V86Starter({
+                    wasm_binary: wasm,
+                    bios: bios,
+                    vga_bios: vgabios,
+                    cdrom: iso,
+                    screen_container: document.getElementById("screen"),
+                    autostart: true
+                });
+
+            } catch (err) {
+                console.error("Failed to load emulator files:", err);
+            }
+        }
+
+        // Wait for libv86.js to be loaded
+        if (typeof V86Starter !== "undefined") {
+            startEmulator();
+        } else {
+            window.addEventListener("load", startEmulator);
+        }
+    </script>
+</body>
+</html>
